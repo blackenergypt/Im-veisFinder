@@ -4,16 +4,14 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 const searchProperties = require('./webScraper');
 const Email = require('./emailModel');
+require('dotenv').config();
 
-mongoose.connect('mongodb://192.168.100.106:27017/imoveisfinder_bot', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(process.env.MONGODB_URI);
 
 const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'Erro na conexão com o MongoDB:'));
-db.once('open', function() {
+db.once('open', () => {
   console.log('Conexão estabelecida com o MongoDB!');
 });
 
