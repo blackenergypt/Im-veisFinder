@@ -1,0 +1,29 @@
+name: SFTP Deploy to Pterodactyl
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Deploy to Pterodactyl via SFTP
+      env:
+        SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+      run: |
+        sftp -oPort=2022 ${{ secrets.SFTP_USERNAME }}@mars.devcode.pt <<EOF
+        put -r . /
+        bye
+        EOF
+
+    - name: Notify Discord 1
+      if: success()
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK1 }}
+      run: |
+        curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"Deploy bem-sucedido no webhook 1!\"}" $DISCORD_WEBHOOK
